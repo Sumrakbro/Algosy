@@ -1,0 +1,92 @@
+package com.company;
+
+import java.util.Scanner;
+
+public class Main {
+    static Scanner scanner = new Scanner(System.in);
+    static int number = 1;
+    static int size = 0;
+    static int nums[][];
+
+    static void printMap(int[][] nums) {
+        for (int y = 0; y < size; y++) {
+            for (int x = 0; x < size; x++) {
+                System.out.print("" + nums[x][y] + "\t");
+            }
+            System.out.println();
+        }
+    }
+
+
+    public static void fillOneSq(int x, int y, int x_zero, int y_zero) {
+        if (x > size && y > size) return;
+        int x_delta = 0, y_delta = 0;
+        if (x == x_zero) {
+            if (y == y_zero) {
+                x_delta = 1;
+                y_delta = 1;
+            } else {
+                x_delta = 1;
+                y_delta = -1;
+            }
+        } else {
+            if (y == y_zero) {
+                x_delta = -1;
+                y_delta = 1;
+            } else {
+                x_delta = -1;
+                y_delta = -1;
+            }
+        }
+
+
+        nums[x_zero + x_delta][y_zero + y_delta] = number;
+        nums[x_zero + x_delta][y_zero] = number;
+        nums[x_zero][y_zero + y_delta] = number;
+        number++;
+    }
+
+    public static void fillMap(int x, int y, int[] xy_zero, int scale_size) {
+        if (scale_size == 2) {
+            fillOneSq(x, y, xy_zero[0], xy_zero[1]);
+        } else {
+            int zero_pole = getZeroPole(x, y, xy_zero[0], xy_zero[1], scale_size);
+            int[][] zero_coords = {
+                    {x + scale_size / 2 - 1, y + scale_size / 2 - 1},
+                    {x + scale_size / 2, y + scale_size / 2 - 1},
+                    {x + scale_size / 2, y + scale_size / 2},
+                    {x + scale_size / 2 - 1, y + scale_size / 2}
+            };
+            fillOneSq(zero_coords[0][0], zero_coords[0][1], zero_coords[zero_pole][0], zero_coords[zero_pole][1]);
+            zero_coords[zero_pole] = xy_zero;
+            fillMap(x, y, zero_coords[0], scale_size / 2);
+            fillMap(x + scale_size / 2, y, zero_coords[1], scale_size / 2);
+            fillMap(x + scale_size / 2, y + scale_size / 2, zero_coords[2], scale_size / 2);
+            fillMap(x, y + scale_size / 2, zero_coords[3], scale_size / 2);
+
+        }
+    }
+
+    // Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕР»Рµ СЃ РЅСѓР»РµРІС‹Рј СЌР»РµРјРµРЅС‚РѕРј, РЅСѓРјРµСЂР°С†РёСЏ СЃ РЅСѓР»СЏ РїРѕ С‡Р°СЃРѕРІРѕР№ СЃС‚СЂРµР»РєРµ
+    public static int getZeroPole(int x, int y, int x_zero, int y_zero, int scale_size) {
+        if (x_zero >= x && x_zero < x + scale_size / 2) {
+            if (y_zero < y + scale_size / 2) return 0;
+            return 3;
+        } else {
+            if (y_zero < y + scale_size / 2) return 1;
+            return 2;
+        }
+    }
+
+    public static void main(String[] args) {
+        int mapSize = scanner.nextInt(),
+                yZero = scanner.nextInt() - 1,
+                xZero = scanner.nextInt() - 1;
+        size = (int) Math.pow(2, mapSize);
+        nums = new int[size][size];
+        int[] xyZero = {xZero, yZero};
+        fillMap(0, 0, xyZero, size);
+        printMap(nums);
+    }
+
+}
