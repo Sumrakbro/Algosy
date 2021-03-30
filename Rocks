@@ -1,0 +1,24 @@
+import java.util.Arrays;
+import java.util.Scanner;
+
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int count = scanner.nextInt();
+        scanner.nextLine();
+        int[] rocks = Arrays.stream(scanner.nextLine().split(" ")).mapToInt(Integer::parseInt).sorted().toArray();
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < (1 << (count - 1)); i++) {
+            int sum1 = 0;
+            int sum2 = 0;
+            for (int j = 0; j < count; j++) {
+                if (((i >> j) & 1) == 0) sum1 += rocks[j];
+                else sum2 += rocks[j];
+            }
+            min = Math.min(min, Math.abs(sum1 - sum2));
+        }
+        System.out.print(min);
+    }
+}
