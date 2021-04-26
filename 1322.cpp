@@ -1,7 +1,8 @@
 #include <iostream>
 #include <conio.h>
 #include <string>
-
+//Чтобы узнать в какой строке будет стоять буква достаточно знать, сколько других букв есть перед ней и сколько раз она уже встретилась в столбце.
+//За первый проход по столбцу мы подсчитываем, сколько и каких букв встретилось в строке.
 using namespace std;
 void solve(int N, int M, int k, string s) {
 
@@ -19,7 +20,7 @@ void solve(int N, int M, int k, string s) {
     sum += count[i];
     count[i] = sum - count[i];
   }
-
+  //указывает на строку с предыдущей буквой 
   int *t = new int[M];
   for (int i = 0; i < N; i++) {
     t[count[s[i]]] = i;

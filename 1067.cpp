@@ -1,64 +1,56 @@
 #include <iostream>
-#include <unordered_map>
-#include <string>
-#include <sstream>
 #include <map>
+#include <sstream>
+#include <string>
 
 using namespace std;
+/*
+—труктура хранени€ данных после разбиени€ и обработки:
+Х	 ажда€ €чейка массива, это структура, котора€ хранит, map.
+Х	Map хранит информацию о дочерних каталогах в виде пары ключ - значение.
+Х	 люч - им€ дочерней директории дл€ текущего каталога.
+Х	«начение - ссылка на описание дочернего каталога (такую же структуру).
 
-class Catalogue;
-
-class Catalogue {
-public:
-	Catalogue() { }
-
-	Catalogue* getCatalogue(string const filename) {
-		if (catalogueContent.find(filename) != catalogueContent.end()) {
-			return catalogueContent[filename];
-		}
-		else {
-			catalogueContent[filename] = new Catalogue();
-			return catalogueContent[filename];
-		}
-	}
-
-	void traverse(string currTabs) {
-		string tabs = " ";
-		tabs += currTabs;
-
-		map<string, Catalogue*> orderedContent(catalogueContent.begin(), catalogueContent.end());
-
-		for (auto it = orderedContent.begin(); it != orderedContent.end(); it++) {
-			cout << currTabs << it->first << endl;	// print key
-			it->second->traverse(tabs);				// traverse value
-		}
-	}
-
-private:
-	unordered_map< string, Catalogue* > catalogueContent;
-
+*/
+struct Dir {
+	map<string, Dir*> sub_dirs;
 };
 
-int main() {
-	size_t count;
-	cin >> count;
+Dir roots[50001];
+long root_dir_num = 1, n;
 
-	Catalogue* root = new Catalogue();
+Dir* new_dir(Dir* parent, string child_name)
+{
+	auto& d = parent->sub_dirs[child_name];
+	// если корневой элемент добавл€ем его в массив
+	if (!d) d = &roots[root_dir_num++];
+	return d;
+}
 
-	string str;
+void print_rec(Dir* roots, string tabs = "")
+{
+	for (auto root_dir : roots->sub_dirs)
+	{
+		cout << tabs << root_dir.first << endl;
+		print_rec(root_dir.second, tabs + " ");
+	}
+}
 
-	for (size_t i = 0; i <= count; i++) {
-		getline(cin, str);
-		stringstream path(str);
+int main()
+{
+	cin >> n;
 
-		Catalogue* current_catalog = root;
+	for (int i = 0; i < n; i++)
+	{
+		string str, dirstr;
+		cin >> str;
+		stringstream ss(str);
+		Dir* dir = &roots[0];
 
-		while (getline(path, str, '\\')) {
-			current_catalog = current_catalog->getCatalogue(str);
-		}
+		while (getline(ss, dirstr, '\\'))
+			dir = new_dir(dir, dirstr);
 	}
 
-	root->traverse("");
-
-	return 0;
+	stringstream out;
+	print_rec(&roots[0]);
 }
